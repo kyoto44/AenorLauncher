@@ -181,19 +181,27 @@ func main() {
 	cmd.Start()
 	fmt.Println("Клиент запущен, приятной игры!")
 
+	guildimage := "sealcircle_photos_v2_x4"
+	if conf.Guild == "КАЭР МОРХЕН" {
+		guildimage = "kaermorhen"
+	}
+	if conf.Guild == "ИМПЕРИЯ" {
+		guildimage = "empire"
+	}
+
 	client.Login("742666702298546207")
 	now := time.Now()
 	err := client.SetActivity(client.Activity{
 		State:      conf.Guild,
 		Details:    conf.Nickname,
-		LargeImage: "sealcircle_photos_v2_x4",
-		LargeText:  "Северный Клинок",
+		LargeImage: guildimage,
+		LargeText:  conf.Guild,
 		SmallImage: "",
 		SmallText:  "",
 		Party: &client.Party{
 			ID:         "-1",
 			Players:    1,
-			MaxPlayers: 5,
+			MaxPlayers: 1,
 		},
 		Timestamps: &client.Timestamps{
 			Start: &now,
