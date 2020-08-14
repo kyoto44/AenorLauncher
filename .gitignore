@@ -1,3 +1,6 @@
 *.toml
 *.log
 *.exe
+*.txt
+*.zip
+AenorLauncher

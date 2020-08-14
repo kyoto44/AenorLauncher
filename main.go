@@ -17,6 +17,8 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/hugolgst/rich-go/client"
+	"github.com/sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 type Config struct {
@@ -86,7 +88,7 @@ func GetDistroInfo(AccessToken string) DistroJSON {
 
 	payload := strings.NewReader("")
 
-	client := &http.Client{}
+	clienthttp := &http.Client{}
 	req, err := http.NewRequest(method, url, payload)
 
 	if err != nil {
@@ -95,7 +97,7 @@ func GetDistroInfo(AccessToken string) DistroJSON {
 	req.Header.Add("User-Agent", "BladeLauncher/1.0.17")
 	req.Header.Add("Authorization", "Bearer "+AccessToken)
 
-	res, err := client.Do(req)
+	res, err := clienthttp.Do(req)
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 
@@ -133,11 +135,19 @@ func GetAuthData() Authdata {
 	if err != nil {
 		panic(err)
 	}
+	if res.StatusCode != http.StatusOK {
+		log.Warn("Неверный логин или пароль.")
+		time.Sleep(7 * time.Second)
+		panic(err)
+	} else {
+		log.Info("Успешная авторизация!")
+	}
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
 
 	authdata := Authdata{}
 	json.Unmarshal(body, &authdata)
+
 	return authdata
 }
 
@@ -160,33 +170,112 @@ func UserHomeDir() string {
 	return os.Getenv("HOME")
 }
 
+func BackupSettings(distroinfo *DistroJSON) {
+
+	var versioninfofilepath string
+	if runtime.GOOS == "windows" {
+		versioninfofilepath = UserHomeDir() + "/AppData/Roaming/.nblade/instances/version.txt"
+	} else if runtime.GOOS == "linux" {
+		versioninfofilepath = UserHomeDir() + "/Northern Blade/version.txt"
+	}
+
+	if _, err := os.Stat(versioninfofilepath); err == nil {
+		oldversion, err := ioutil.ReadFile(versioninfofilepath)
+		if err != nil {
+			panic(err)
+		}
+
+		if string(oldversion) == "" {
+			ioutil.WriteFile(versioninfofilepath, []byte(distroinfo.Servers[0].Versions[0].ID), 0644)
+		} else if string(oldversion) != distroinfo.Servers[0].Versions[0].ID {
+			log.Info("Обнаружено обновление, сохраняем старые настройки...")
+			var settings []byte
+			if runtime.GOOS == "windows" {
+				settings, err = ioutil.ReadFile(UserHomeDir() + "/AppData/Roaming/.nblade/instances/" + string(oldversion) + "/profiles/preferences.xml")
+			} else if runtime.GOOS == "linux" {
+				settings, err = ioutil.ReadFile(UserHomeDir() + "/Northern Blade/" + string(oldversion) + "/profiles/preferences.xml")
+			}
+			if err != nil {
+				panic(err)
+			}
+			ioutil.WriteFile(versioninfofilepath, []byte(distroinfo.Servers[0].Versions[0].ID), 0644)
+			if runtime.GOOS == "windows" {
+				ioutil.WriteFile(UserHomeDir()+"/AppData/Roaming/.nblade/instances/"+distroinfo.Servers[0].Versions[0].ID+"/profiles/preferences.xml", settings, 0644)
+			} else if runtime.GOOS == "linux" {
+				ioutil.WriteFile(UserHomeDir()+"/Northern Blade/"+distroinfo.Servers[0].Versions[0].ID+"/profiles/preferences.xml", settings, 0644)
+			}
+			log.Info("Настройки успешно сохранены")
+		} else if os.IsNotExist(err) {
+			return
+		}
+	}
+}
+
+var gamepath string
+
 func main() {
 
+	logrus.SetFormatter(&logrus.TextFormatter{ForceColors: true})
 	//Executing config
-	if _, err := toml.DecodeFile("config.toml", &conf); err != nil {
-		panic("config.toml doesn't exist")
+	if _, err := toml.DecodeFile("config.txt", &conf); err != nil {
+		log.Warn("Конфигурационный файл config.txt не обнаружен!")
+		time.Sleep(7 * time.Second)
+		panic(err)
 	}
 
 	authdata := GetAuthData()
 	distroinfo := GetDistroInfo(authdata.AccessToken)
 
+	if runtime.GOOS == "windows" {
+		if _, err := os.Stat(UserHomeDir() + "/AppData/Roaming/.nblade/instances/version.txt"); err == nil {
+		} else if os.IsNotExist(err) {
+			create(UserHomeDir() + "/AppData/Roaming/.nblade/instances/version.txt")
+		}
+	} else if runtime.GOOS == "linux" {
+		if _, err := os.Stat(UserHomeDir() + "/Northern Blade/version.txt"); err == nil {
+		} else if os.IsNotExist(err) {
+			create(UserHomeDir() + "/Northern Blade/version.txt")
+		}
+	}
+
+	BackupSettings(&distroinfo)
+
 	Updater(&distroinfo)
 
-	fmt.Println("Текущая версия клиента: " + distroinfo.Servers[0].Versions[0].ID)
+	log.Info("Текущая версия клиента: " + distroinfo.Servers[0].Versions[0].ID)
 
 	os.Setenv("LOGIN", authdata.Profile.Login)
 	os.Setenv("TOKEN", authdata.AccessToken)
 
-	cmd := exec.Command(UserHomeDir()+"\\AppData\\Roaming\\.nblade\\instances\\"+distroinfo.Servers[0].Versions[0].ID+"\\bin\\nblade.exe", os.Getenv("LOGIN"), os.Getenv("TOKEN"))
-	cmd.Start()
-	fmt.Println("Клиент запущен, приятной игры!")
-
-	guildimage := "sealcircle_photos_v2_x4"
-	if conf.Guild == "КАЭР МОРХЕН" {
-		guildimage = "kaermorhen"
+	//Starting game
+	cmd := exec.Command("")
+	if runtime.GOOS == "windows" {
+		gamepath = UserHomeDir() + "/AppData/Roaming/.nblade/instances/" + distroinfo.Servers[0].Versions[0].ID + "/bin/nblade.exe"
+		cmd = exec.Command(gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
+	} else if runtime.GOOS == "linux" {
+		gamepath = UserHomeDir() + "/Northern Blade/" + distroinfo.Servers[0].Versions[0].ID + "/bin/nblade.exe"
+		cmd = exec.Command("wine "+gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
 	}
-	if conf.Guild == "ИМПЕРИЯ" {
+
+	cmd.Start()
+	log.Info("Клиент запущен, приятной игры!")
+
+	var guildimage string
+	switch conf.Guild {
+	case "КАЭР МОРХЕН":
+		guildimage = "kaermorhen"
+	case "ИМПЕРИЯ":
 		guildimage = "empire"
+	case "FORCE":
+		guildimage = "force"
+	case "НЕМЕЗИДА":
+		guildimage = "nemezida"
+	case "МЕДВЕДИ":
+		guildimage = "medvedi"
+	case "ВЕТЕРАНЫ":
+		guildimage = "veterani"
+	default:
+		guildimage = "sealcircle_photos_v2_x4"
 	}
 
 	client.Login("742666702298546207")
