@@ -1,3 +1,5 @@
 *.toml
 *.log
 *.exe
+*.txt
+*.zip

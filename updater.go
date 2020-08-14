@@ -7,15 +7,14 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
-	"reflect"
-	"time"
-	"unsafe"
+	"path/filepath"
+	"runtime"
 
-	"github.com/cavaliercoder/grab"
-	"github.com/cheggaaa/pb"
+	"github.com/dustin/go-humanize"
+	"github.com/melbahja/got"
+	log "github.com/sirupsen/logrus"
 )
 
 type LatestVersionInfo struct {
@@ -354,6 +353,13 @@ type LatestVersionInfo struct {
 	ID                     string `json:"id"`
 }
 
+func create(p string) (*os.File, error) {
+	if err := os.MkdirAll(filepath.Dir(p), 0770); err != nil {
+		return nil, err
+	}
+	return os.Create(p)
+}
+
 func GetLatestGameVersion(distroinfo *DistroJSON) LatestVersionInfo {
 
 	url := "http://downloads.n-blade.ru/dist/versions/" + distroinfo.Servers[0].Versions[0].ID + ".json"
@@ -361,118 +367,151 @@ func GetLatestGameVersion(distroinfo *DistroJSON) LatestVersionInfo {
 
 	client := &http.Client{}
 	req, err := http.NewRequest(method, url, nil)
-
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
-
-	//fmt.Println(string(body))
 
 	latestversioninfo := LatestVersionInfo{}
 	json.Unmarshal(body, &latestversioninfo)
 	return latestversioninfo
 }
 
-func BytesToString(b []byte) string {
-	bh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
-	sh := reflect.StringHeader{bh.Data, bh.Len}
-	return *(*string)(unsafe.Pointer(&sh))
-}
+func Downloader(path string, url string, sha512sum string) {
 
-func Downloader(path string, link string, sha512sum string) {
+	if _, err := os.Stat(path); err == nil {
+		f, err := os.Open(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
 
-	f, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer f.Close()
+		h := sha512.New()
+		if _, err := io.Copy(h, f); err != nil {
+			log.Fatal(err)
+		}
 
-	h := sha512.New()
-	if _, err := io.Copy(h, f); err != nil {
-		log.Fatal(err)
-	}
+		hashsum := h.Sum(nil)
+		sha512bytes := []byte(sha512sum[7:])
 
-	hashsum := h.Sum(nil)
-	sha512bytes := []byte(sha512sum[7:])
+		if string(sha512bytes) == hex.EncodeToString(hashsum[:]) {
+			log.Info(path + " не устарел!")
+			return
+		}
 
-	if string(sha512bytes) == hex.EncodeToString(hashsum[:]) {
-		fmt.Println(path + " up-to-date!")
-		return
-	}
+		d := got.Download{
+			URL:         url,
+			Dest:        path,
+			ChunkSize:   uint64(1048576),
+			Interval:    100,
+			Concurrency: 10,
+		}
 
-	client := grab.NewClient()
-	req, _ := grab.NewRequest(path, link)
-	// start download
-	fmt.Printf("Скачивается %v...\n", req.URL())
-	resp := client.Do(req)
+		if err := d.Init(); err != nil {
+			log.Fatal(err)
+		}
 
-	t := time.NewTicker(200 * time.Millisecond)
-	defer t.Stop()
+		d.Progress.ProgressFunc = func(p *got.Progress, d *got.Download) {
+			fmt.Printf(
+				"\r\r\bЗагружается %s | Размер: %s | Загружено: %s | Скорость: %s/s",
+				url,
+				humanize.Bytes(uint64(p.TotalSize)),
+				humanize.Bytes(uint64(p.Size)),
+				humanize.Bytes(p.Speed()),
+			)
+		}
 
-	bar := pb.StartNew(int(resp.Size()) / 1024 / 1024)
-	bar.Start()
+		if err := d.Start(); err != nil {
+			log.Fatal(err)
+		}
 
-Loop:
-	for {
-		select {
-		case <-t.C:
-			bar.Set64(resp.BytesComplete() / 1024 / 1024)
-		case <-resp.Done:
-			// download is complete
-			bar.Finish()
-			break Loop
+	} else if os.IsNotExist(err) {
+
+		create(path)
+
+		d := got.Download{
+			URL:         url,
+			Dest:        path,
+			ChunkSize:   uint64(1048576),
+			Interval:    100,
+			Concurrency: 10,
+		}
+
+		if err := d.Init(); err != nil {
+			log.Fatal(err)
+		}
+
+		d.Progress.ProgressFunc = func(p *got.Progress, d *got.Download) {
+			fmt.Printf(
+				"\r\r\bЗагружается %s | Размер: %s | Загружено: %s | Скорость: %s/s",
+				url,
+				humanize.Bytes(uint64(p.TotalSize)),
+				humanize.Bytes(uint64(p.Size)),
+				humanize.Bytes(p.Speed()),
+			)
+		}
+		if err := d.Start(); err != nil {
+			log.Fatal(err)
 		}
 	}
-
-	// check for errors
-	if err := resp.Err(); err != nil {
-		fmt.Fprintf(os.Stderr, "Ошибка при загрузке: %v\n", err)
-		os.Exit(1)
-	}
-
 }
 
 func Updater(distroinfo *DistroJSON) {
 
 	latestversioninfo := GetLatestGameVersion(distroinfo)
-	path := UserHomeDir() + "/AppData/Roaming/.nblade/instances/" + distroinfo.Servers[0].Versions[0].ID + "/"
 
-	/* Game files */
-	Downloader(path+latestversioninfo.Downloads.ResAudioFtFevSeq.Artifact.Path, latestversioninfo.Downloads.ResAudioFtFevSeq.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtFevSeq.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.ResAudioFtFdp.Artifact.Path, latestversioninfo.Downloads.ResAudioFtFdp.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtFdp.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.ResAudioFtFev.Artifact.Path, latestversioninfo.Downloads.ResAudioFtFev.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtFev.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.ResAudioFtBank02Fsb.Artifact.Path, latestversioninfo.Downloads.ResAudioFtBank02Fsb.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtBank02Fsb.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.ResAudioFtBank02FsbSeq.Artifact.Path, latestversioninfo.Downloads.ResAudioFtBank02FsbSeq.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtBank02FsbSeq.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.ResAudioFtBank04Fsb.Artifact.Path, latestversioninfo.Downloads.ResAudioFtBank04Fsb.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtBank04Fsb.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.ResAudioFtBank04FsbSeq.Artifact.Path, latestversioninfo.Downloads.ResAudioFtBank04FsbSeq.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtBank04FsbSeq.Artifact.Checksum)
+	if runtime.GOOS == "windows" {
+		gamepath = UserHomeDir() + "/AppData/Roaming/.nblade/instances/" + distroinfo.Servers[0].Versions[0].ID + "/"
+	} else if runtime.GOOS == "linux" {
+		gamepath = UserHomeDir() + "/Northern Blade/" + distroinfo.Servers[0].Versions[0].ID + "/"
+	}
 
-	Downloader(path+latestversioninfo.Downloads.PacksBwZpk.Artifact.Path, latestversioninfo.Downloads.PacksBwZpk.Artifact.Urls[0], latestversioninfo.Downloads.PacksBwZpk.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.PacksMapsZpk.Artifact.Path, latestversioninfo.Downloads.PacksMapsZpk.Artifact.Urls[0], latestversioninfo.Downloads.PacksMapsZpk.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.PacksResZpk.Artifact.Path, latestversioninfo.Downloads.PacksResZpk.Artifact.Urls[0], latestversioninfo.Downloads.PacksResZpk.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.PacksSpacesZpk.Artifact.Path, latestversioninfo.Downloads.PacksSpacesZpk.Artifact.Urls[0], latestversioninfo.Downloads.PacksSpacesZpk.Artifact.Checksum)
+	log.Info("Проверка целостности игровых файлов")
+	/*TODO: Refactor is needed, thanks to Northern Blade devs...*/
+	Downloader(gamepath+latestversioninfo.Downloads.ResAudioFtFevSeq.Artifact.Path, latestversioninfo.Downloads.ResAudioFtFevSeq.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtFevSeq.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.ResAudioFtFdp.Artifact.Path, latestversioninfo.Downloads.ResAudioFtFdp.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtFdp.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.ResAudioFtFev.Artifact.Path, latestversioninfo.Downloads.ResAudioFtFev.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtFev.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.ResAudioFtBank02Fsb.Artifact.Path, latestversioninfo.Downloads.ResAudioFtBank02Fsb.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtBank02Fsb.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.ResAudioFtBank02FsbSeq.Artifact.Path, latestversioninfo.Downloads.ResAudioFtBank02FsbSeq.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtBank02FsbSeq.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.ResAudioFtBank04Fsb.Artifact.Path, latestversioninfo.Downloads.ResAudioFtBank04Fsb.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtBank04Fsb.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.ResAudioFtBank04FsbSeq.Artifact.Path, latestversioninfo.Downloads.ResAudioFtBank04FsbSeq.Artifact.Urls[0], latestversioninfo.Downloads.ResAudioFtBank04FsbSeq.Artifact.Checksum)
 
-	Downloader(path+latestversioninfo.Downloads.BinD3Dx931Dll.Artifact.Path, latestversioninfo.Downloads.BinD3Dx931Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinD3Dx931Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinD3DX940Dll.Artifact.Path, latestversioninfo.Downloads.BinD3DX940Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinD3DX940Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinD3DX941Dll.Artifact.Path, latestversioninfo.Downloads.BinD3DX941Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinD3DX941Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinD3DX942Dll.Artifact.Path, latestversioninfo.Downloads.BinD3DX942Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinD3DX942Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinFmodEventNetDll.Artifact.Path, latestversioninfo.Downloads.BinFmodEventNetDll.Artifact.Urls[0], latestversioninfo.Downloads.BinFmodEventNetDll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinFmodexDll.Artifact.Path, latestversioninfo.Downloads.BinFmodexDll.Artifact.Urls[0], latestversioninfo.Downloads.BinFmodexDll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinLibeay32Dll.Artifact.Path, latestversioninfo.Downloads.BinLibeay32Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinLibeay32Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMfc80Dll.Artifact.Path, latestversioninfo.Downloads.BinMfc80Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinMfc80Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMfc80UDll.Artifact.Path, latestversioninfo.Downloads.BinMfc80UDll.Artifact.Urls[0], latestversioninfo.Downloads.BinMfc80UDll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMicrosoftVC80CRTManifest.Artifact.Path, latestversioninfo.Downloads.BinMicrosoftVC80CRTManifest.Artifact.Urls[0], latestversioninfo.Downloads.BinMicrosoftVC80CRTManifest.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMicrosoftVC80MFCManifest.Artifact.Path, latestversioninfo.Downloads.BinMicrosoftVC80MFCManifest.Artifact.Urls[0], latestversioninfo.Downloads.BinMicrosoftVC80MFCManifest.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMsvcm80Dll.Artifact.Path, latestversioninfo.Downloads.BinMsvcm80Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinMsvcm80Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMsvcp80Dll.Artifact.Path, latestversioninfo.Downloads.BinMsvcp80Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinMsvcp80Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMSVCP90DLL.Artifact.Path, latestversioninfo.Downloads.BinMSVCP90DLL.Artifact.Urls[0], latestversioninfo.Downloads.BinMSVCP90DLL.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMSVCR80DLL.Artifact.Path, latestversioninfo.Downloads.BinMSVCR80DLL.Artifact.Urls[0], latestversioninfo.Downloads.BinMSVCR80DLL.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinMSVCR90DLL.Artifact.Path, latestversioninfo.Downloads.BinMSVCR90DLL.Artifact.Urls[0], latestversioninfo.Downloads.BinMSVCR90DLL.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinNbladeExe.Artifact.Path, latestversioninfo.Downloads.BinNbladeExe.Artifact.Urls[0], latestversioninfo.Downloads.BinNbladeExe.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinSplashBmp.Artifact.Path, latestversioninfo.Downloads.BinSplashBmp.Artifact.Urls[0], latestversioninfo.Downloads.BinSplashBmp.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinSsleay32Dll.Artifact.Path, latestversioninfo.Downloads.BinSsleay32Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinSsleay32Dll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinVoipDll.Artifact.Path, latestversioninfo.Downloads.BinVoipDll.Artifact.Urls[0], latestversioninfo.Downloads.BinVoipDll.Artifact.Checksum)
-	Downloader(path+latestversioninfo.Downloads.BinZlib1Dll.Artifact.Path, latestversioninfo.Downloads.BinZlib1Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinZlib1Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.PacksBwZpk.Artifact.Path, latestversioninfo.Downloads.PacksBwZpk.Artifact.Urls[0], latestversioninfo.Downloads.PacksBwZpk.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.PacksMapsZpk.Artifact.Path, latestversioninfo.Downloads.PacksMapsZpk.Artifact.Urls[0], latestversioninfo.Downloads.PacksMapsZpk.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.PacksResZpk.Artifact.Path, latestversioninfo.Downloads.PacksResZpk.Artifact.Urls[0], latestversioninfo.Downloads.PacksResZpk.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.PacksSpacesZpk.Artifact.Path, latestversioninfo.Downloads.PacksSpacesZpk.Artifact.Urls[0], latestversioninfo.Downloads.PacksSpacesZpk.Artifact.Checksum)
+
+	Downloader(gamepath+latestversioninfo.Downloads.BinD3Dx931Dll.Artifact.Path, latestversioninfo.Downloads.BinD3Dx931Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinD3Dx931Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinD3DX940Dll.Artifact.Path, latestversioninfo.Downloads.BinD3DX940Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinD3DX940Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinD3DX941Dll.Artifact.Path, latestversioninfo.Downloads.BinD3DX941Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinD3DX941Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinD3DX942Dll.Artifact.Path, latestversioninfo.Downloads.BinD3DX942Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinD3DX942Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinFmodEventNetDll.Artifact.Path, latestversioninfo.Downloads.BinFmodEventNetDll.Artifact.Urls[0], latestversioninfo.Downloads.BinFmodEventNetDll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinFmodexDll.Artifact.Path, latestversioninfo.Downloads.BinFmodexDll.Artifact.Urls[0], latestversioninfo.Downloads.BinFmodexDll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinLibeay32Dll.Artifact.Path, latestversioninfo.Downloads.BinLibeay32Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinLibeay32Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMfc80Dll.Artifact.Path, latestversioninfo.Downloads.BinMfc80Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinMfc80Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMfc80UDll.Artifact.Path, latestversioninfo.Downloads.BinMfc80UDll.Artifact.Urls[0], latestversioninfo.Downloads.BinMfc80UDll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMfcm80Dll.Artifact.Path, latestversioninfo.Downloads.BinMfcm80Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinMfcm80Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMfcm80UDll.Artifact.Path, latestversioninfo.Downloads.BinMfcm80UDll.Artifact.Urls[0], latestversioninfo.Downloads.BinMfcm80UDll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMicrosoftVC80CRTManifest.Artifact.Path, latestversioninfo.Downloads.BinMicrosoftVC80CRTManifest.Artifact.Urls[0], latestversioninfo.Downloads.BinMicrosoftVC80CRTManifest.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMicrosoftVC80MFCManifest.Artifact.Path, latestversioninfo.Downloads.BinMicrosoftVC80MFCManifest.Artifact.Urls[0], latestversioninfo.Downloads.BinMicrosoftVC80MFCManifest.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMsvcm80Dll.Artifact.Path, latestversioninfo.Downloads.BinMsvcm80Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinMsvcm80Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMsvcp80Dll.Artifact.Path, latestversioninfo.Downloads.BinMsvcp80Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinMsvcp80Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMSVCP90DLL.Artifact.Path, latestversioninfo.Downloads.BinMSVCP90DLL.Artifact.Urls[0], latestversioninfo.Downloads.BinMSVCP90DLL.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMSVCR80DLL.Artifact.Path, latestversioninfo.Downloads.BinMSVCR80DLL.Artifact.Urls[0], latestversioninfo.Downloads.BinMSVCR80DLL.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinMSVCR90DLL.Artifact.Path, latestversioninfo.Downloads.BinMSVCR90DLL.Artifact.Urls[0], latestversioninfo.Downloads.BinMSVCR90DLL.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinNbladeExe.Artifact.Path, latestversioninfo.Downloads.BinNbladeExe.Artifact.Urls[0], latestversioninfo.Downloads.BinNbladeExe.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinSplashBmp.Artifact.Path, latestversioninfo.Downloads.BinSplashBmp.Artifact.Urls[0], latestversioninfo.Downloads.BinSplashBmp.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinSsleay32Dll.Artifact.Path, latestversioninfo.Downloads.BinSsleay32Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinSsleay32Dll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinVoipDll.Artifact.Path, latestversioninfo.Downloads.BinVoipDll.Artifact.Urls[0], latestversioninfo.Downloads.BinVoipDll.Artifact.Checksum)
+	Downloader(gamepath+latestversioninfo.Downloads.BinZlib1Dll.Artifact.Path, latestversioninfo.Downloads.BinZlib1Dll.Artifact.Urls[0], latestversioninfo.Downloads.BinZlib1Dll.Artifact.Checksum)
+	Downloader(gamepath+"bin/paths.xml", "https://kyoto44.com/paths.xml", "sha512:c6020b7b7d1930ca359bf460c621567f33f94b99ff6294fee5192a08a6f690ab8facb990db084158ae3ba432f684cb348d940d74748cab93197adedf72b60efb")
+
+	fmt.Println()
+	log.Info("Все файлы прошли проверку!")
 }
