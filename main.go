@@ -231,11 +231,22 @@ func main() {
 		} else if os.IsNotExist(err) {
 			create(UserHomeDir() + "/AppData/Roaming/.nblade/instances/version.txt")
 		}
+
+		if _, err := os.Stat(UserHomeDir() + "/AppData/Roaming/.nblade/instances/common/config/temp/"); err == nil {
+		} else if os.IsNotExist(err) {
+			create(UserHomeDir() + "/AppData/Roaming/.nblade/instances/common/config/temp/")
+		}
 	} else if runtime.GOOS == "linux" {
 		if _, err := os.Stat(UserHomeDir() + "/Northern Blade/version.txt"); err == nil {
 		} else if os.IsNotExist(err) {
 			create(UserHomeDir() + "/Northern Blade/version.txt")
 		}
+
+		if _, err := os.Stat(UserHomeDir() + "/common/config/temp/"); err == nil {
+		} else if os.IsNotExist(err) {
+			create(UserHomeDir() + "/common/config/temp/")
+		}
+
 	}
 
 	BackupSettings(&distroinfo)
@@ -254,7 +265,7 @@ func main() {
 		cmd = exec.Command(gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
 	} else if runtime.GOOS == "linux" {
 		gamepath = UserHomeDir() + "/Northern Blade/" + distroinfo.Servers[0].Versions[0].ID + "/bin/nblade.exe"
-		cmd = exec.Command("wine "+gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
+		cmd = exec.Command("wine", gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
 	}
 
 	cmd.Start()
