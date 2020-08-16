@@ -1,0 +1,10 @@
+<root>
+    <Paths>
+        <Path>..\res</Path>
+        <Path>..\packs\maps.zpk</Path>
+        <Path>..\packs\spaces.zpk</Path>
+        <Path>..\packs\res.zpk</Path>
+        <Path>..\packs\bw.zpk</Path>
+        <ExportPath>..\..\..\common\config\temp</ExportPath>
+    </Paths>
+</root>

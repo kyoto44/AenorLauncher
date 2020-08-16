@@ -10,4 +10,5 @@ require (
 	github.com/melbahja/got v0.1.5
 	github.com/sirupsen/logrus v1.6.0
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
+	lukechampine.com/blake3 v1.1.4
 )
