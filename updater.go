@@ -7,10 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
 	"runtime"
 
-	"github.com/dustin/go-humanize"
+	"fyne.io/fyne/widget"
 	"github.com/melbahja/got"
 	log "github.com/sirupsen/logrus"
 	"lukechampine.com/blake3"
@@ -24,13 +23,6 @@ type LatestVersionInfo struct {
 			Checksum string `json:"checksum"`
 		} `json:"files"`
 	} `json:"resources"`
-}
-
-func create(p string) (*os.File, error) {
-	if err := os.MkdirAll(filepath.Dir(p), 0770); err != nil {
-		return nil, err
-	}
-	return os.Create(p)
 }
 
 func GetLatestGameVersion(distroinfo *DistroJSON) LatestVersionInfo {
@@ -56,9 +48,11 @@ func GetLatestGameVersion(distroinfo *DistroJSON) LatestVersionInfo {
 	return latestversioninfo
 }
 
-func Downloader(path string, url string, blake3sum string) {
+func Downloader(path string, url string, blake3sum string, s *widget.Label) {
 
 	if _, err := os.Stat(path); err == nil {
+
+		s.SetText("Проверяется файл " + path)
 		file, err := ioutil.ReadFile(path)
 		if err != nil {
 			log.Fatal(err)
@@ -81,25 +75,13 @@ func Downloader(path string, url string, blake3sum string) {
 		if err := d.Init(); err != nil {
 			log.Fatal(err)
 		}
-
-		d.Progress.ProgressFunc = func(p *got.Progress, d *got.Download) {
-			fmt.Printf(
-				"\r\r\bЗагружается %s | Размер: %s | Загружено: %s | Скорость: %s/s",
-				url,
-				humanize.Bytes(uint64(p.TotalSize)),
-				humanize.Bytes(uint64(p.Size)),
-				humanize.Bytes(p.Speed()),
-			)
-		}
-
 		if err := d.Start(); err != nil {
 			log.Fatal(err)
 		}
+		s.SetText("Cкачивается файл " + url)
 
 	} else if os.IsNotExist(err) {
-
 		create(path)
-
 		d := got.Download{
 			URL:         url,
 			Dest:        path,
@@ -112,22 +94,14 @@ func Downloader(path string, url string, blake3sum string) {
 			log.Fatal(err)
 		}
 
-		d.Progress.ProgressFunc = func(p *got.Progress, d *got.Download) {
-			fmt.Printf(
-				"\r\r\bЗагружается %s | Размер: %s | Загружено: %s | Скорость: %s/s",
-				url,
-				humanize.Bytes(uint64(p.TotalSize)),
-				humanize.Bytes(uint64(p.Size)),
-				humanize.Bytes(p.Speed()),
-			)
-		}
 		if err := d.Start(); err != nil {
 			log.Fatal(err)
 		}
+		s.SetText("Cкачивается файл " + url)
 	}
 }
 
-func Updater(distroinfo *DistroJSON) {
+func Updater(distroinfo *DistroJSON, p *widget.ProgressBar, s *widget.Label) {
 
 	latestversioninfo := GetLatestGameVersion(distroinfo)
 
@@ -140,7 +114,9 @@ func Updater(distroinfo *DistroJSON) {
 	log.Info("Проверка целостности игровых файлов")
 
 	for i := 0; i < len(latestversioninfo.Resources.Files); i++ {
-		Downloader(gamepath+latestversioninfo.Resources.Files[i].Path, latestversioninfo.Resources.Files[i].URL, latestversioninfo.Resources.Files[i].Checksum)
+		Downloader(gamepath+latestversioninfo.Resources.Files[i].Path, latestversioninfo.Resources.Files[i].URL, latestversioninfo.Resources.Files[i].Checksum, s)
+		currentvalue := float64(i+1) / float64(len(latestversioninfo.Resources.Files))
+		p.SetValue(currentvalue)
 	}
 
 	fmt.Println()
