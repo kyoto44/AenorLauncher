@@ -16,9 +16,9 @@
 * 🐧Поддержка Linux
 
 ## ⬇️ Скачать 
-[Версия для Windows](https://github.com/kyoto44/AenorLauncher/releases/download/1.0/AenorLauncher1.0-win.zip) ![GitHub Releases (by Asset)](https://img.shields.io/github/downloads/kyoto44/AenorLauncher/1.0/AenorLauncher1.0-win.zip?style=flat-square)
+[Версия для Windows](https://github.com/kyoto44/AenorLauncher/releases/download/v1.1.1-beta/AenorLauncher.exe) ![GitHub Releases (by Asset)](https://img.shields.io/github/downloads/kyoto44/AenorLauncher/v1.1.1-beta/AenorLauncher.exe?style=flat-square)
 
-[Версия для Linux](https://github.com/kyoto44/AenorLauncher/releases/download/1.0/AenorLauncher1.0-linux.zip) ![GitHub Releases (by Asset)](https://img.shields.io/github/downloads/kyoto44/AenorLauncher/1.0/AenorLauncher1.0-linux.zip?style=flat-square)
+[Версия для Linux](https://github.com/kyoto44/AenorLauncher/releases/download/v1.1.1-beta/AenorLauncher) ![GitHub Releases (by Asset)](https://img.shields.io/github/downloads/kyoto44/AenorLauncher/v1.1.1-beta/AenorLauncher?style=flat-square)
 
 ## 👋 Как использовать
 
