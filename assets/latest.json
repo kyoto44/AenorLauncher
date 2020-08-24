@@ -129,22 +129,22 @@
       {
         "path": "packs/bw.zpk",
         "url": "http://downloads.n-blade.ru/dist/versions/20.07.04.01/packs/bw.zpk",
-        "checksum": "155f1da2a8ca57999e04bafa84191cef2ce6f7d7e4d304c8019d37a45abf5f3b"
+        "checksum": "d258042aa864039efcf4788c7c09132a5606972acbc78701b3b91f41d6f5a8cb"
       },
       {
         "path": "packs/maps.zpk",
         "url": "http://downloads.n-blade.ru/dist/versions/20.07.04.01/packs/maps.zpk",
-        "checksum": "f60cc886021cf4ec2ef48c9104578e9d4f959d87fbfc5e26c70db9d0a6ac6862"
+        "checksum": "d8abf3366745ecda838290707f1de722a2a819ad676d3294973a9485ab35eafb"
       },
       {
         "path": "packs/res.zpk",
         "url": "http://downloads.n-blade.ru/dist/versions/20.07.04.01/packs/res.zpk",
-        "checksum": "2d67d9acd9e0ea02de65babb08eac2f7f9581f94a29433ccdc8d718969776ebe"
+        "checksum": "2ae3c7741cd034fe75ef58c3fd70171a20f8f6f65500c4d2d42f1a4cb016d45e"
       },
       {
         "path": "packs/spaces.zpk",
         "url": "http://downloads.n-blade.ru/dist/versions/20.07.04.01/packs/spaces.zpk",
-        "checksum": "0c16fdfa223d32c3ed605377775693c25508fda3555c903c5a5507ae441348fb"
+        "checksum": "899ffb6e5859ce1ebc83b3adcf2337404b23d2ca0143cfd282634b0c8bc77f7f"
       },
       {
         "path": "res/audio/ft.fdp",
