@@ -3,97 +3,97 @@
     "files": [
       {
         "path": "bin/D3DX9_40.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/D3DX9_40.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/D3DX9_40.dll",
         "checksum": "1e7bd18eb43207164fb91d143fce161ab7899c22d84e2f8b8486074b10e6547f"
       },
       {
         "path": "bin/D3DX9_41.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/D3DX9_41.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/D3DX9_41.dll",
         "checksum": "cb117ed05c742ebddeb3e7bbc6567661a16fd087621b33a5c368d57f1063bc96"
       },
       {
         "path": "bin/D3DX9_42.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/D3DX9_42.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/D3DX9_42.dll",
         "checksum": "b5686d5836bb5ec799619ba817603856fa7f70f31dd854b003d8478473c5ead9"
       },
       {
         "path": "bin/MSVCP90.DLL",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/MSVCP90.DLL",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/MSVCP90.DLL",
         "checksum": "fd94bc45384f839aacbcfce518346bd28deceeb3b14325e9290a4728f2266770"
       },
       {
         "path": "bin/MSVCR80.DLL",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/MSVCR80.DLL",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/MSVCR80.DLL",
         "checksum": "53ee49cfbd5ebdad4d358dd20cb82f0b53e2df012536739cadb6525626415a6e"
       },
       {
         "path": "bin/MSVCR90.DLL",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/MSVCR90.DLL",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/MSVCR90.DLL",
         "checksum": "d7a88f2460e6698ec08fcbcc33c91ad00ec26ebce8dee061f93822c24255fddf"
       },
       {
         "path": "bin/Microsoft.VC80.CRT.manifest",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/Microsoft.VC80.CRT.manifest",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/Microsoft.VC80.CRT.manifest",
         "checksum": "392bc43b217ce064a30f42b10841b442cce6dd3bbb6c5d2dca6ae442a8dfbe57"
       },
       {
         "path": "bin/Microsoft.VC80.MFC.manifest",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/Microsoft.VC80.MFC.manifest",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/Microsoft.VC80.MFC.manifest",
         "checksum": "5db939e145f92e913ee743fd7be922e9e7f8d2c74811dc98dbca4e2dd2cd966a"
       },
       {
         "path": "bin/d3dx9_31.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/d3dx9_31.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/d3dx9_31.dll",
         "checksum": "905ddfe40e06c0f7e1b3bb8f6d61f096447adddc2dba27f0431b57e25cce7f9c"
       },
       {
         "path": "bin/fmod_event_net.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/fmod_event_net.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/fmod_event_net.dll",
         "checksum": "d1c78424b8b323c7bb65ed887fa16f2332ee9c2aa32a2c250fe60f8add27192b"
       },
       {
         "path": "bin/fmodex.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/fmodex.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/fmodex.dll",
         "checksum": "6f957c668f87c48311a94d0aec837fd484f87dbd4dfb1d12744be6840f681444"
       },
       {
         "path": "bin/libeay32.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/libeay32.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/libeay32.dll",
         "checksum": "afe89faa8cca6b210e5c40c817cfc2ab4106a2ad2202996761b13e32a55c05f5"
       },
       {
         "path": "bin/mfc80.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/mfc80.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/mfc80.dll",
         "checksum": "5205a238868b50c5294b6b75d20b5d7f813b215b09ce66ce5db4c70ea9fb5d8d"
       },
       {
         "path": "bin/mfc80u.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/mfc80u.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/mfc80u.dll",
         "checksum": "ea2fb4e740248e4c980402afaa4f4720b5d09dfe9ac04e51863636b0f8a6c376"
       },
       {
         "path": "bin/mfcm80.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/mfcm80.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/mfcm80.dll",
         "checksum": "21ac1c93d6a37aadb9380a89435ab5054a870c6c4dee263b94a54aa34a22358f"
       },
       {
         "path": "bin/mfcm80u.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/mfcm80u.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/mfcm80u.dll",
         "checksum": "7c06db61184badd6c0c5397ba824303f44c43a0201e536e2400c86625e6189b9"
       },
       {
         "path": "bin/msvcm80.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/msvcm80.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/msvcm80.dll",
         "checksum": "94901b80c7c003446df51f7ea2d411f7c9ad09222ab5b8a4f0137c826c8caa09"
       },
       {
         "path": "bin/msvcp80.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/msvcp80.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/msvcp80.dll",
         "checksum": "2c7c0587f1fc5de9efd705991f8d0d44386ea1c5565f978b40689170e422ad15"
       },
       {
         "path": "bin/nblade.exe",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/nblade.exe",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/nblade.exe",
         "checksum": "16a29fa9083bc7a84718a0c231426e7cfde8be20fd76a654e38a0f595ffd7f07"
       },
       {
@@ -103,82 +103,82 @@
       },
       {
         "path": "bin/paths.xml.ejs",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/paths.xml.ejs",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/paths.xml.ejs",
         "checksum": "753cedb3a4124f641dd72da4ee11819992d387809fa790820dd413d226924c8c"
       },
       {
         "path": "bin/splash.bmp",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/splash.bmp",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/splash.bmp",
         "checksum": "33594158523c27dabfe18269c19bd2ba9b31b774bf2b7b01a23950472c0b62de"
       },
       {
         "path": "bin/ssleay32.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/ssleay32.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/ssleay32.dll",
         "checksum": "5e27977fed49b4399cf39e94ed357a4f821fe45a69d4cfd63a602747977230cb"
       },
       {
         "path": "bin/voip.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/voip.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/voip.dll",
         "checksum": "fd8ea474daf4d4e902732e84c1f3e55738ca6449ef690ccc5b84c6162bfef4e7"
       },
       {
         "path": "bin/zlib1.dll",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/bin/zlib1.dll",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/bin/zlib1.dll",
         "checksum": "16622635a88f9462d57aeb3b3616cd2f6c4d45f7b544a91be989c0291b14f5c7"
       },
       {
         "path": "packs/bw.zpk",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/packs/bw.zpk",
-        "checksum": "d258042aa864039efcf4788c7c09132a5606972acbc78701b3b91f41d6f5a8cb"
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/packs/bw.zpk",
+        "checksum": "f37788d46e840fc4bf6f75177dfc0fa7365d1830e8cdce205e12320a5a0549db"
       },
       {
         "path": "packs/maps.zpk",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/packs/maps.zpk",
-        "checksum": "d8abf3366745ecda838290707f1de722a2a819ad676d3294973a9485ab35eafb"
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/packs/maps.zpk",
+        "checksum": "f5c366249d883868edbba725789e6b0d8c0089c9ad8104bdf2332a13192757d8"
       },
       {
         "path": "packs/res.zpk",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/packs/res.zpk",
-        "checksum": "2ae3c7741cd034fe75ef58c3fd70171a20f8f6f65500c4d2d42f1a4cb016d45e"
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/packs/res.zpk",
+        "checksum": "b30ebd5232a392c4031cbc3ccab68cd5cf891cdb207950cef5ecf9f8f4d2f69c"
       },
       {
         "path": "packs/spaces.zpk",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/packs/spaces.zpk",
-        "checksum": "899ffb6e5859ce1ebc83b3adcf2337404b23d2ca0143cfd282634b0c8bc77f7f"
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/packs/spaces.zpk",
+        "checksum": "a2bd773b3f4258b83f1ec62f04986fd9f4ca4560c10bb96d91c65f0d60f708ca"
       },
       {
         "path": "res/audio/ft.fdp",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/res/audio/ft.fdp",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/res/audio/ft.fdp",
         "checksum": "858e88b8a83a2487e66e403f7c1070d525d5d7e3ef9b61b4b57c1522f1e76126"
       },
       {
         "path": "res/audio/ft.fev",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/res/audio/ft.fev",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/res/audio/ft.fev",
         "checksum": "4f2ac86d086e3c74aecff2e9659a75928463af7b0ff4ac2365038186ff9f9959"
       },
       {
         "path": "res/audio/ft.fev.seq",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/res/audio/ft.fev.seq",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/res/audio/ft.fev.seq",
         "checksum": "da6b85ec7e1e6f2f001e92f35cc408f7475ea87261d3057876fe0f3f23dc338e"
       },
       {
         "path": "res/audio/ft_bank02.fsb",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/res/audio/ft_bank02.fsb",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/res/audio/ft_bank02.fsb",
         "checksum": "6ecde15513a36283f7450615bddba8a733cd6b2d6d11dcfde2701ea06728c939"
       },
       {
         "path": "res/audio/ft_bank02.fsb.seq",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/res/audio/ft_bank02.fsb.seq",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/res/audio/ft_bank02.fsb.seq",
         "checksum": "9d7544bbc8507265e131f9b42f567d6c54e799c62356103470ba03da0f5673a8"
       },
       {
         "path": "res/audio/ft_bank04.fsb",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/res/audio/ft_bank04.fsb",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/res/audio/ft_bank04.fsb",
         "checksum": "3f2af2fe686ab47b49aaf4490919adf982648dc9833b0d776a622827dc823381"
       },
       {
         "path": "res/audio/ft_bank04.fsb.seq",
-        "url": "http://downloads.n-blade.ru/dist/versions/20.08.24.03/res/audio/ft_bank04.fsb.seq",
+        "url": "http://downloads.n-blade.ru/dist/versions/20.08.25.02/res/audio/ft_bank04.fsb.seq",
         "checksum": "da6b85ec7e1e6f2f001e92f35cc408f7475ea87261d3057876fe0f3f23dc338e"
       }
     ]
