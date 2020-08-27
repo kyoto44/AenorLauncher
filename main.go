@@ -5,11 +5,12 @@ import (
 	"os/exec"
 	"runtime"
 
-	app "github.com/kyoto44/AenorLauncher/backend"
 	"github.com/leaanthony/mewn"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/wailsapp/wails"
+
+	app "github.com/kyoto44/AenorLauncher/backend"
 )
 
 // var (

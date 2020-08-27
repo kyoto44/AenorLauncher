@@ -1,4 +1,4 @@
-package app
+package backend
 
 import (
 	"bytes"
@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"fyne.io/fyne/widget"
 	"github.com/hugolgst/rich-go/client"
 	log "github.com/sirupsen/logrus"
 )
@@ -97,12 +96,12 @@ func GetDistroInfo(AccessToken string) DistroJSON {
 
 }
 
-func (a *LauncherApplication) GetAuthData(username *widget.Entry, password *widget.Entry) (Authdata, int) {
+func (a *LauncherApplication) GetAuthData(username string, password string) (Authdata, int) {
 	auth, err := json.Marshal(LoginJSON{
 		Agent:       "minecraftAgent",
-		Username:    username.Text,
+		Username:    username,
 		RequestUser: true,
-		Password:    a.GetMD5Hash(password.Text),
+		Password:    a.GetMD5Hash(password),
 	})
 
 	if err != nil {
