@@ -1,4 +1,4 @@
-module github.com/kyoto44/aenorlauncher/v2
+module github.com/kyoto44/aenorlauncher
 
 go 1.15
 

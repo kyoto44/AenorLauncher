@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/wailsapp/wails"
 
-	app "github.com/kyoto44/AenorLauncher/backend"
+	app "github.com/kyoto44/aenorlauncher/backend"
 )
 
 // var (
