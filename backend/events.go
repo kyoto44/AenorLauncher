@@ -1,4 +1,4 @@
-package backend
+package app
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"runtime"
 	"strings"
 	"time"
@@ -96,7 +97,7 @@ func GetDistroInfo(AccessToken string) DistroJSON {
 
 }
 
-func (a *LauncherApplication) GetAuthData(username string, password string) (Authdata, int) {
+func (a *LauncherApplication) GetAuthData(username string, password string) int {
 	auth, err := json.Marshal(LoginJSON{
 		Agent:       "minecraftAgent",
 		Username:    username,
@@ -136,7 +137,9 @@ func (a *LauncherApplication) GetAuthData(username string, password string) (Aut
 	authdata := Authdata{}
 	json.Unmarshal(body, &authdata)
 
-	return authdata, res.StatusCode
+	a.distroinfo = GetDistroInfo(authdata.AccessToken)
+
+	return res.StatusCode
 }
 
 func (a *LauncherApplication) BackupSettings(distroinfo *DistroJSON) {
@@ -247,4 +250,21 @@ func (a *LauncherApplication) CreateRequiredDirs() {
 			a.CreatePath(a.UserHomeDir() + "/common/config/temp/")
 		}
 	}
+}
+
+func (a *LauncherApplication) RunGame() {
+
+	os.Setenv("LOGIN", a.authdata.Profile.Login)
+	os.Setenv("TOKEN", a.authdata.AccessToken)
+
+	cmd := exec.Command("")
+	if runtime.GOOS == "windows" {
+		a.gamepath = a.UserHomeDir() + "/AppData/Roaming/.nblade/instances/" + a.distroinfo.Servers[0].Versions[0].ID + "/bin/nblade.exe"
+		cmd = exec.Command(a.gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
+	} else if runtime.GOOS == "linux" {
+		a.gamepath = a.UserHomeDir() + "/Northern Blade/" + a.distroinfo.Servers[0].Versions[0].ID + "/bin/nblade.exe"
+		cmd = exec.Command("wine", a.gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
+	}
+	cmd.Start()
+
 }

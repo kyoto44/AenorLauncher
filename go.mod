@@ -3,6 +3,7 @@ module github.com/kyoto44/aenorlauncher
 go 1.15
 
 require (
+	github.com/UnnoTed/fileb0x v1.1.4 // indirect
 	github.com/ananagame/rich-go v0.0.0-20200319172754-527649f3d36d // indirect
 	github.com/hugolgst/rich-go v0.0.0-20200319172754-527649f3d36d
 	github.com/leaanthony/mewn v0.10.7

@@ -1,4 +1,4 @@
-package backend
+package app
 
 import (
 	"github.com/sirupsen/logrus"

@@ -1,13 +1,8 @@
 package main
 
 import (
-	"os"
-	"os/exec"
-	"runtime"
-
 	"github.com/leaanthony/mewn"
 	"github.com/sirupsen/logrus"
-	log "github.com/sirupsen/logrus"
 	"github.com/wailsapp/wails"
 
 	app "github.com/kyoto44/aenorlauncher/backend"
@@ -36,7 +31,7 @@ func main() {
 		Colour: "#326fa8",
 	})
 
-	frontend.Bind(&app.WalletApplication{})
+	frontend.Bind(&app.LauncherApplication{})
 	err := frontend.Run()
 
 	if err != nil {
@@ -44,27 +39,15 @@ func main() {
 	}
 
 	//authdata, loginstatus := GetAuthData(userNameEntry, passwordEntry)
-	os.Setenv("LOGIN", authdata.Profile.Login)
-	os.Setenv("TOKEN", authdata.AccessToken)
-	distroinfo = GetDistroInfo(authdata.AccessToken)
-	BackupSettings(&distroinfo)
+
+	//BackupSettings(&distroinfo)
 	//SetDiscordStatus(nicknameEntry.Text, guildEntry.Text)
 
 	//Updater(&distroinfo, progressBar, currentStatus)
 
-	cmd := exec.Command("")
-	if runtime.GOOS == "windows" {
-		gamepath = UserHomeDir() + "/AppData/Roaming/.nblade/instances/" + distroinfo.Servers[0].Versions[0].ID + "/bin/nblade.exe"
-		cmd = exec.Command(gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
-	} else if runtime.GOOS == "linux" {
-		gamepath = UserHomeDir() + "/Northern Blade/" + distroinfo.Servers[0].Versions[0].ID + "/bin/nblade.exe"
-		cmd = exec.Command("wine", gamepath, os.Getenv("LOGIN"), os.Getenv("TOKEN"))
-	}
-	cmd.Start()
+	// log.Info("Текущая версия клиента: " + distroinfo.Servers[0].Versions[0].ID)
 
-	log.Info("Текущая версия клиента: " + distroinfo.Servers[0].Versions[0].ID)
-
-	log.Info("Клиент запущен, приятной игры!")
+	// log.Info("Клиент запущен, приятной игры!")
 
 	//time.Sleep(time.Duration(math.MaxInt64))
 }
