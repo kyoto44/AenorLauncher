@@ -1,30 +1,30 @@
 [
-  {
-    "name": "каэр морхен",
-    "image": "kaermorhen"
-  },
-  {
-    "name": "империя",
-    "image": "empire"
-  },
-  {
-    "name": "force",
-    "image": "force"
-  },
-  {
-    "name": "немезида",
-    "image": "nemezida"
-  },
-  {
-    "name": "медведи",
-    "image": "medvedi"
-  },
-  {
-    "name": "ветераны",
-    "image": "veterani"
-  },
-  {
-    "name": "milky way",
-    "image": "milkyway"
-  }
+    {
+        "name": "КАЭР МОРХЕН",
+        "image": "kaermorhen"
+    },
+    {
+        "name": "Империя",
+        "image": "empire"
+    },
+    {
+        "name": "FORCE",
+        "image": "force"
+    },
+    {
+        "name": "Немезида",
+        "image": "nemezida"
+    },
+    {
+        "name": "Медведи",
+        "image": "medvedi"
+    },
+    {
+        "name": "Ветераны",
+        "image": "veterani"
+    },
+    {
+        "name": "Milky Way",
+        "image": "milkyway"
+    }
 ]
