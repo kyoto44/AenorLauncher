@@ -1,32 +1,30 @@
-{
-    "guilds": [
-        {
-            "name": "каэр морхен",
-            "image": "kaermorhen"
-        },
-        {
-            "name": "империя",
-            "image": "empire"
-        },
-        {
-            "name": "force",
-            "guildimage": "force"
-        },
-        {
-            "name": "немезида",
-            "image": "nemezida"
-        },
-        {
-            "name": "медведи",
-            "image": "medvedi"
-        },
-        {
-            "name": "ветераны",
-            "image": "veterani"
-        },
-        {
-            "name": "milky way",
-            "image": "milkyway"
-        }
-    ]
-}
+[
+  {
+    "name": "каэр морхен",
+    "image": "kaermorhen"
+  },
+  {
+    "name": "империя",
+    "image": "empire"
+  },
+  {
+    "name": "force",
+    "guildimage": "force"
+  },
+  {
+    "name": "немезида",
+    "image": "nemezida"
+  },
+  {
+    "name": "медведи",
+    "image": "medvedi"
+  },
+  {
+    "name": "ветераны",
+    "image": "veterani"
+  },
+  {
+    "name": "milky way",
+    "image": "milkyway"
+  }
+]
